@@ -6,7 +6,7 @@ async function handler(req, res) {
   const {Queues} = req.app.locals;
   const queue = await Queues.get(queueName, queueHost);
 
-  const jobNames = Queues.getJobNames(queueName, queueHost);
+  const jobNames = queue.IS_BEE ? [] : Queues.getJobNames(queueName, queueHost);
 
   const basePath = req.baseUrl;
   if (!queue) return res.status(404).render('dashboard/templates/queueNotFound', {basePath, queueName, queueHost});
