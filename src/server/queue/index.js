@@ -28,6 +28,16 @@ class Queues {
     this._config = config;
   }
 
+  getJobNames(queueName, queueHost) {
+    const queueConfig = _.find(this._config.queues, {
+      name: queueName,
+      hostId: queueHost
+    });
+    if (!queueConfig) return [];
+        
+    return queueConfig.job_names || [];
+  }
+
   async get(queueName, queueHost) {
     const queueConfig = _.find(this._config.queues, {
       name: queueName,
@@ -82,15 +92,23 @@ class Queues {
    * @param {Object} queue A bee or bull queue class
    * @param {Object} data The data to be used within the job
    */
-  async set(queue, data) {
-    if (queue.IS_BEE) {
-      return queue.createJob(data).save();
-    } else {
-      return queue.add(data, {
-        removeOnComplete: false,
-        removeOnFail: false
-      });
+  async set(queue, data) {    
+    const opts = {
+      removeOnComplete: false,
+      removeOnFail: false
     }
+
+    if(!queue.IS_BEE && 'mode' in data) {
+      if(data.mode == 'named') {
+        return queue.add(data.name, data.data, opts);
+      } else if (data.mode == 'raw') {
+        return queue.add(data.data, opts);
+      } else {
+        throw new Error(`Unknown mode: ${data.mode}!`);
+      }
+    } else {
+      return queue.add(data, opts);
+    }    
   }
 }
 

@@ -11,6 +11,13 @@
         <div class="jsoneditorx form-group hide overflow-hidden">
           <div class="jsoneditorx hide" id="jsoneditor" style="height:200px;"></div>
           <br />
+          <select class="js-job-names form-control">
+            <option value="unnamed" selected>unnamed</option>
+            {{#each jobNames}}
+            <option value="{{ this }}">{{ this }}</option>
+            {{/each}}
+          </select>
+          <br />
           <div class="js-add-job  btn btn-primary btn-sm pull-right">Create</div>
         </div>
         <ul class="list-group">
