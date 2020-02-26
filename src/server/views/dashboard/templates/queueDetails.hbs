@@ -11,7 +11,7 @@
         <div class="jsoneditorx form-group hide overflow-hidden">
           <div class="jsoneditorx hide" id="jsoneditor" style="height:200px;"></div>
           <br />
-          <select class="js-job-names form-control">
+          <select class="js-job-names form-control" {{#unless jobNames.length}}disabled{{/unless}}>
             <option value="unnamed" selected>unnamed</option>
             {{#each jobNames}}
             <option value="{{ this }}">{{ this }}</option>
