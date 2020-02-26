@@ -137,13 +137,19 @@ $(document).ready(() => {
   });
 
   $('.js-add-job').on('click', function() {
+    const jobName = $('.js-job-names').children("option:selected").val() || 'unnamed';
+    const mode = jobName == 'unnamed' ? 'raw' : 'named';
     const data = window.jsonEditor.get();
     localStorage.setItem('arena:savedJobData', JSON.stringify(data));
     const { queueHost, queueName } = window.arenaInitialPayload;
     $.ajax({
       url: `${basePath}/api/queue/${queueHost}/${queueName}/job`,
       type: 'POST',
-      data: JSON.stringify(data),
+      data: JSON.stringify({
+        mode: mode,
+        name: jobName,
+        data: data
+      }),
       contentType: 'application/json'
     }).done(() => {
       alert('Job successfully added!');

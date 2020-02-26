@@ -28,6 +28,16 @@ class Queues {
     this._config = config;
   }
 
+  getJobNames(queueName, queueHost) {
+    const queueConfig = _.find(this._config.queues, {
+      name: queueName,
+      hostId: queueHost
+    });
+    if (!queueConfig) return [];
+        
+    return queueConfig.job_names || [];
+  }
+
   async get(queueName, queueHost) {
     const queueConfig = _.find(this._config.queues, {
       name: queueName,
@@ -86,11 +96,23 @@ class Queues {
     if (queue.IS_BEE) {
       return queue.createJob(data).save();
     } else {
-      return queue.add(data, {
+      const opts = {
         removeOnComplete: false,
         removeOnFail: false
-      });
-    }
+      }
+
+      if('mode' in data) {
+        if(data.mode == 'named') {
+          return queue.add(data.name, data.data, opts);
+        } else if (data.mode == 'raw') {
+          return queue.add(data.data, opts);
+        } else {
+          throw new Error(`Unknown mode: ${data.mode}!`);
+        }
+      } else {
+        return queue.add(data, opts);
+      }
+    }    
   }
 }
 
