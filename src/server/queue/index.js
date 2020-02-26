@@ -92,22 +92,26 @@ class Queues {
    * @param {Object} queue A bee or bull queue class
    * @param {Object} data The data to be used within the job
    */
-  async set(queue, data) {    
-    const opts = {
-      removeOnComplete: false,
-      removeOnFail: false
-    }
-
-    if(!queue.IS_BEE && 'mode' in data) {
-      if(data.mode == 'named') {
-        return queue.add(data.name, data.data, opts);
-      } else if (data.mode == 'raw') {
-        return queue.add(data.data, opts);
-      } else {
-        throw new Error(`Unknown mode: ${data.mode}!`);
-      }
+  async set(queue, data) {
+    if (queue.IS_BEE) {
+      return queue.createJob(data).save();
     } else {
-      return queue.add(data, opts);
+      const opts = {
+        removeOnComplete: false,
+        removeOnFail: false
+      }
+
+      if('mode' in data) {
+        if(data.mode == 'named') {
+          return queue.add(data.name, data.data, opts);
+        } else if (data.mode == 'raw') {
+          return queue.add(data.data, opts);
+        } else {
+          throw new Error(`Unknown mode: ${data.mode}!`);
+        }
+      } else {
+        return queue.add(data, opts);
+      }
     }    
   }
 }
