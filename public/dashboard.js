@@ -133,7 +133,9 @@ $(document).ready(() => {
   $('.js-toggle-add-job-editor').on('click', function() {
     $('.jsoneditorx').toggleClass('hide');
     const data = localStorage.getItem('arena:savedJobData') || '{ id: \'\' }';
+    const jobName = localStorage.getItem('arena:jobName');
     window.jsonEditor.set(JSON.parse(data));
+    $('.js-job-names').val(jobName || 'unnamed');
   });
 
   $('.js-add-job').on('click', function() {
@@ -141,6 +143,7 @@ $(document).ready(() => {
     const mode = jobName == 'unnamed' ? 'raw' : 'named';
     const data = window.jsonEditor.get();
     localStorage.setItem('arena:savedJobData', JSON.stringify(data));
+    localStorage.setItem('arena:jobName', jobName);
     const { queueHost, queueName } = window.arenaInitialPayload;
     $.ajax({
       url: `${basePath}/api/queue/${queueHost}/${queueName}/job`,
@@ -154,6 +157,7 @@ $(document).ready(() => {
     }).done(() => {
       alert('Job successfully added!');
       localStorage.removeItem('arena:savedJobData');
+      localStorage.removeItem('arena:jobName');
     }).fail((jqXHR) => {
       window.alert('Failed to save job, check console for error.');
       console.error(jqXHR.responseText);
